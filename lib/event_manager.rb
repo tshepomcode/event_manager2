@@ -44,7 +44,17 @@ def legislators_by_zipcode(zip)
 end
 
 def clean_homephone(homephone)
+  homephone.gsub!(/\D/, '')
+  homephone.gsub!(/\s+/, '')
 
+  if homephone.length > 10 && homephone.chr == '1'
+    homephone.delete_prefix!(homephone.chr)
+  elsif homephone.length > 10 || homephone.length < 10
+    homephone.replace '0000000000'
+  # elsif homephone.length < 10
+  #   homephone.replace '0000000000'
+  end
+  
 end
 
 def save_thank_you_letter(id, form_letter)
@@ -71,11 +81,14 @@ erb_template = ERB.new template_letter
 contents.each do |row|
   id = row[0]
   name = row[:first_name]
+  homephone = row[:homephone]
 
   zipcode = clean_zipcode(row[:zipcode])
 
   legislators = legislators_by_zipcode(zipcode)
 
+  clean_homephone(homephone)
+ 
   form_letter = erb_template.result(binding)
 
   save_thank_you_letter(id, form_letter)
