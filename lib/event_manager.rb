@@ -92,6 +92,7 @@ contents = CSV.open(
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
 reg_hours = []
+week_days = []
 
 contents.each do |row|
   id = row[0]
@@ -106,9 +107,13 @@ contents.each do |row|
 
   # save_hours(row[:regdate], reg_hours)
 
+  #save week days
   reg_date = Date.strptime(row[:regdate], "%m/%d/%y")
-  # day_of_week = 
-  puts reg_date
+  week_days << reg_date.wday
+  
+  
+
+  # puts reg_date.wday
  
   # form_letter = erb_template.result(binding)
 
@@ -117,4 +122,20 @@ contents.each do |row|
 end
 
 # display_peak_hours(reg_hours)
+wday_peak = Hash.new(0)
+week_days.each {|wday| wday_peak[wday] += 1}
 
+puts "Week days"
+p wday_peak
+
+peak_days = wday_peak.sort_by { |wday, peak| peak}.last[0]
+
+puts "Peak Days"
+p peak_days
+
+# reg_peak = Hash.new(0)
+#   reg_hours.each {|hour| reg_peak[hour] += 1}
+
+#   peak_hours = reg_peak.sort_by { |hour, peak| peak}.last(2).flatten!
+#   a, b = peak_hours.values_at(0, 2)
+#   puts "Peak hours at #{a} and #{b}"
