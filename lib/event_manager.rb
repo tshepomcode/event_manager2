@@ -17,6 +17,8 @@
 require 'csv'
 require 'google/apis/civicinfo_v2'
 require 'erb'
+require 'date'
+require 'time'
 
 civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
 civic_info.key = 'AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw'
@@ -51,8 +53,6 @@ def clean_homephone(homephone)
     homephone.delete_prefix!(homephone.chr)
   elsif homephone.length > 10 || homephone.length < 10
     homephone.replace '0000000000'
-  # elsif homephone.length < 10
-  #   homephone.replace '0000000000'
   end
   
 end
@@ -67,6 +67,20 @@ def save_thank_you_letter(id, form_letter)
   end
 end
 
+def save_hours(regdate, reg_hours)
+  reg_date = Time.strptime(regdate, "%m/%d/%y %H:%M")
+  reg_hours << reg_date.hour
+end
+
+def display_peak_hours(reg_hours)
+  reg_peak = Hash.new(0)
+  reg_hours.each {|hour| reg_peak[hour] += 1}
+
+  peak_hours = reg_peak.sort_by { |hour, peak| peak}.last(2).flatten!
+  a, b = peak_hours.values_at(0, 2)
+  puts "Peak hours at #{a} and #{b}"
+end
+
 puts 'EventManager Initialized!'
 
 contents = CSV.open(
@@ -77,6 +91,7 @@ contents = CSV.open(
 
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
+reg_hours = []
 
 contents.each do |row|
   id = row[0]
@@ -88,16 +103,18 @@ contents.each do |row|
   legislators = legislators_by_zipcode(zipcode)
 
   clean_homephone(homephone)
+
+  # save_hours(row[:regdate], reg_hours)
+
+  reg_date = Date.strptime(row[:regdate], "%m/%d/%y")
+  # day_of_week = 
+  puts reg_date
  
-  form_letter = erb_template.result(binding)
+  # form_letter = erb_template.result(binding)
 
-  save_thank_you_letter(id, form_letter)
+  # save_thank_you_letter(id, form_letter)
 
-  # personal_letter = template_letter.gsub('FIRST_NAME', name)
-  # personal_letter.gsub!('LEGISLATORS', legislators)
-
-  # homephone = clean_homephone(row[:homephone])
-
-  # # puts "#{name} #{zipcode} #{legislators}"
-  # puts form_letter
 end
+
+# display_peak_hours(reg_hours)
+
