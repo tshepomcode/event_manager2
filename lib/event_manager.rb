@@ -81,6 +81,13 @@ def display_peak_hours(reg_hours)
   puts "Peak hours at #{a} and #{b}"
 end
 
+def save_weekdays(regdate, week_days)
+
+  reg_date = Date.strptime(regdate, "%m/%d/%y")
+  # week_days << reg_date.wday
+  week_days << reg_date.strftime("%A")
+end
+
 puts 'EventManager Initialized!'
 
 contents = CSV.open(
@@ -105,11 +112,14 @@ contents.each do |row|
 
   clean_homephone(homephone)
 
-  # save_hours(row[:regdate], reg_hours)
+  save_hours(row[:regdate], reg_hours)
 
   #save week days
-  reg_date = Date.strptime(row[:regdate], "%m/%d/%y")
-  week_days << reg_date.wday
+
+  save_weekdays(row[:regdate], week_days)
+  # reg_date = Date.strptime(row[:regdate], "%m/%d/%y")
+  # # week_days << reg_date.wday
+  # week_days << reg_date.strftime("%A")
   
   
 
@@ -122,6 +132,8 @@ contents.each do |row|
 end
 
 # display_peak_hours(reg_hours)
+display peek_day(week_days)
+
 wday_peak = Hash.new(0)
 week_days.each {|wday| wday_peak[wday] += 1}
 
@@ -131,7 +143,7 @@ p wday_peak
 peak_days = wday_peak.sort_by { |wday, peak| peak}.last[0]
 
 puts "Peak Days"
-p peak_days
+puts peak_days
 
 # reg_peak = Hash.new(0)
 #   reg_hours.each {|hour| reg_peak[hour] += 1}
