@@ -78,14 +78,23 @@ def display_peak_hours(reg_hours)
 
   peak_hours = reg_peak.sort_by { |hour, peak| peak}.last(2).flatten!
   a, b = peak_hours.values_at(0, 2)
-  puts "Peak hours at #{a} and #{b}"
+  puts "Peak hours are at #{a} and #{b}"
 end
 
 def save_weekdays(regdate, week_days)
-
   reg_date = Date.strptime(regdate, "%m/%d/%y")
   # week_days << reg_date.wday
   week_days << reg_date.strftime("%A")
+end
+
+def display_peek_day(week_days)
+  wday_peak = Hash.new(0)
+  week_days.each {|wday| wday_peak[wday] += 1}
+ 
+  peak_days = wday_peak.sort_by { |wday, peak| peak}.last[0]
+  
+  puts "Peak registration day is #{peak_days}"
+  # puts peak_days
 end
 
 puts 'EventManager Initialized!'
@@ -117,37 +126,10 @@ contents.each do |row|
   #save week days
 
   save_weekdays(row[:regdate], week_days)
-  # reg_date = Date.strptime(row[:regdate], "%m/%d/%y")
-  # # week_days << reg_date.wday
-  # week_days << reg_date.strftime("%A")
-  
-  
-
-  # puts reg_date.wday
- 
-  # form_letter = erb_template.result(binding)
-
-  # save_thank_you_letter(id, form_letter)
 
 end
 
-# display_peak_hours(reg_hours)
-display peek_day(week_days)
+display_peak_hours(reg_hours)
+display_peek_day(week_days)
 
-wday_peak = Hash.new(0)
-week_days.each {|wday| wday_peak[wday] += 1}
 
-puts "Week days"
-p wday_peak
-
-peak_days = wday_peak.sort_by { |wday, peak| peak}.last[0]
-
-puts "Peak Days"
-puts peak_days
-
-# reg_peak = Hash.new(0)
-#   reg_hours.each {|hour| reg_peak[hour] += 1}
-
-#   peak_hours = reg_peak.sort_by { |hour, peak| peak}.last(2).flatten!
-#   a, b = peak_hours.values_at(0, 2)
-#   puts "Peak hours at #{a} and #{b}"
